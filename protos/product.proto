@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package product;
+
+service ProductService {
+  rpc AddProduct (ProductRequest) returns (ProductResponse);
+  rpc ValidateProduct (ValidateProductRequest) returns (ValidateProductResponse);
+}
+
+message ProductRequest {
+  string name = 1;
+  double price = 2;
+}
+
+message ProductResponse {
+  string message = 1;
+  string id = 2; // ✅ ID generado del producto
+}
+
+message ValidateProductRequest {
+  string productId = 1;
+}
+
+message ValidateProductResponse {
+  bool exists = 1;
+}

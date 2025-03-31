@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc CreateUser (UserRequest) returns (UserResponse);
+  rpc ValidateUser (ValidateUserRequest) returns (ValidateUserResponse);
+}
+
+message UserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message UserResponse {
+  string message = 1;
+}
+
+message ValidateUserRequest {
+  string userId = 1;
+}
+
+message ValidateUserResponse {
+  bool exists = 1;
+}
