@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # puerto para servicios
+      - "15672:15672"   # panel web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  user-service-a:
+    build:
+      context: ./user-service-A
+    container_name: user-service-a
+    environment:
+      - PORT=50051
+    ports:
+      - "50051:50051"
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+
+  user-service-b:
+    build:
+      context: ./user-service-B
+    container_name: user-service-b
+    environment:
+      - PORT=50052
+    ports:
+      - "50052:50052"
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+
+  user-service-c:
+    build:
+      context: ./user-service-C
+    container_name: user-service-c
+    environment:
+      - PORT=50053
+    ports:
+      - "50053:50053"
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+
+volumes:
+  mongo_data:
