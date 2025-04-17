@@ -14,6 +14,7 @@ message UserRequest {
 
 message UserResponse {
   string message = 1;
+  string id = 2;
 }
 
 message ValidateUserRequest {

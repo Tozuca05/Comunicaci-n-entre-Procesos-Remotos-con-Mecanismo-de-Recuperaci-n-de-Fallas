@@ -1,52 +1,77 @@
 const express = require('express');
+const amqp = require('amqplib');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
 const app = express();
 app.use(express.json());
 
-// Load protos
-const userProtoDef = protoLoader.loadSync('../protos/user.proto');
-const userPackage = grpc.loadPackageDefinition(userProtoDef).user;
+// RabbitMQ
+let channel;
+async function connectRabbitMQ() {
+  try {
+    const connection = await amqp.connect('amqp://localhost');
+    channel = await connection.createChannel();
+    await channel.assertQueue('usuarios');
+    console.log('📡 Conectado a RabbitMQ y cola `usuarios`');
+  } catch (err) {
+    console.error('❌ Error conectando a RabbitMQ:', err.message);
+  }
+}
+connectRabbitMQ();
 
-const productProtoDef = protoLoader.loadSync('../protos/product.proto');
-const productPackage = grpc.loadPackageDefinition(productProtoDef).product;
+// Cargar el .proto y definir clientes gRPC
+const packageDef = protoLoader.loadSync('../protos/user.proto');
+const grpcObject = grpc.loadPackageDefinition(packageDef);
+const userPackage = grpcObject.user;
 
-const orderProtoDef = protoLoader.loadSync('../protos/order.proto');
-const orderPackage = grpc.loadPackageDefinition(orderProtoDef).order;
+const userClients = [
+  new userPackage.UserService('localhost:50051', grpc.credentials.createInsecure()),
+  new userPackage.UserService('localhost:50052', grpc.credentials.createInsecure()),
+  new userPackage.UserService('localhost:50053', grpc.credentials.createInsecure())
+];
 
-// Create gRPC clients
-const userClient = new userPackage.UserService('localhost:50051', grpc.credentials.createInsecure());
-const productClient = new productPackage.ProductService('localhost:50052', grpc.credentials.createInsecure());
-const orderClient = new orderPackage.OrderService('localhost:50053', grpc.credentials.createInsecure());
+// Función reutilizable de failover gRPC
+function withFailover(methodName, payload, callback, index = 0) {
+  if (index >= userClients.length) {
+    return callback(new Error('Todos los servicios fallaron'));
+  }
 
-// Routes
-app.post('/usuario', (req, res) => {
-  const { name, email } = req.body;
-  userClient.CreateUser({ name, email }, (err, response) => {
-    if (err) return res.status(500).json({ error: 'Error creando usuario' });
+  userClients[index][methodName](payload, (err, res) => {
+    if (err) {
+      console.warn(`❌ Servidor en puerto ${50051 + index} falló. Probando siguiente...`);
+      withFailover(methodName, payload, callback, index + 1);
+    } else {
+      callback(null, res);
+    }
+  });
+}
+
+// 📨 Crear usuario → RabbitMQ
+app.post('/usuario', async (req, res) => {
+  const message = JSON.stringify(req.body);
+  try {
+    await channel.sendToQueue('usuarios', Buffer.from(message));
+    console.log('📤 Mensaje encolado:', req.body);
+    res.json({ message: 'Usuario encolado para creación' });
+  } catch (err) {
+    console.error('❌ Error encolando mensaje:', err.message);
+    res.status(500).json({ error: 'Error encolando el mensaje' });
+  }
+});
+
+// ✅ Validar usuario → gRPC con failover
+app.post('/validar', (req, res) => {
+  withFailover('ValidateUser', req.body, (err, response) => {
+    if (err) {
+      console.error('❌ Error validando usuario:', err.message);
+      return res.status(500).json({ error: 'Error validando usuario' });
+    }
     res.json(response);
   });
 });
 
-app.post('/producto', (req, res) => {
-  const { name, price } = req.body;
-  productClient.AddProduct({ name, price }, (err, response) => {
-    if (err) return res.status(500).json({ error: 'Error creando producto' });
-    res.json(response);
-  });
-});
-
-app.post('/orden', (req, res) => {
-  const { userId, productId, quantity } = req.body;
-  orderClient.CreateOrder({ userId, productId, quantity }, (err, response) => {
-    if (err) return res.status(500).json({ error: 'Error creando orden' });
-    res.json(response);
-  });
-});
-
-// Start server
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`🌐 API Gateway corriendo en http://localhost:${PORT}`);
+  console.log(`🌐 API Gateway escuchando en http://localhost:${PORT}`);
 });
