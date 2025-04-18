@@ -10,7 +10,7 @@ app.use(express.json());
 let channel;
 async function connectRabbitMQ() {
   try {
-    const connection = await amqp.connect('amqp://localhost');
+    const connection = await amqp.connect('amqp://rabbitmq');
     channel = await connection.createChannel();
     await channel.assertQueue('usuarios');
     console.log('📡 Conectado a RabbitMQ y cola `usuarios`');
