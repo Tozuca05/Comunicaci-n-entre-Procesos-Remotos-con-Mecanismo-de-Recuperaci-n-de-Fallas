@@ -16,8 +16,11 @@ async function connectRabbitMQ() {
     console.log('📡 Conectado a RabbitMQ y cola `usuarios`');
   } catch (err) {
     console.error('❌ Error conectando a RabbitMQ:', err.message);
+    console.log('🔁 Reintentando conexión a RabbitMQ en 5 segundos...');
+    setTimeout(connectRabbitMQ, 5000);
   }
 }
+
 connectRabbitMQ();
 
 // Cargar el .proto y definir clientes gRPC
