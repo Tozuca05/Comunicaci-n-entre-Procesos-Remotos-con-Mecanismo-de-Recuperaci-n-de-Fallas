@@ -62,13 +62,16 @@ async function consumeRabbitMQ() {
         const usuario = new Usuario({ name: data.name, email: data.email });
         const saved = await usuario.save();
         console.log(`✅ Usuario ${saved.name} guardado desde ${PORT} con ID: ${saved._id}`);
-        channel.ack(msg)
+        channel.ack(msg);
       } catch (err) {
         console.error('❌ Error guardando usuario:', err.message);
       }
     });
+
   } catch (err) {
-    console.error('❌ Error conectando a RabbitMQ:', err.message);
+    console.error(`❌ Error conectando a RabbitMQ: ${err.message}`);
+    console.log('🔁 Reintentando conexión en 5 segundos...');
+    setTimeout(consumeRabbitMQ, 5000);  // Reintenta tras 5 segundos
   }
 }
 

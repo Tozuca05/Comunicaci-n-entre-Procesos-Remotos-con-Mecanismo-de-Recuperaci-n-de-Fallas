@@ -67,9 +67,13 @@ async function consumeRabbitMQ() {
         console.error('❌ Error guardando usuario:', err.message);
       }
     });
+
   } catch (err) {
-    console.error('❌ Error conectando a RabbitMQ:', err.message);
+    console.error(`❌ Error conectando a RabbitMQ: ${err.message}`);
+    console.log('🔁 Reintentando conexión en 5 segundos...');
+    setTimeout(consumeRabbitMQ, 5000);  // Reintenta tras 5 segundos
   }
 }
+
 
 consumeRabbitMQ();
