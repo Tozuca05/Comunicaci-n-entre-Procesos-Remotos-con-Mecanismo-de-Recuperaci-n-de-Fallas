@@ -9,11 +9,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -53,10 +48,8 @@ services:
     ports:
       - "50051:50051"
     depends_on:
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
@@ -71,10 +64,8 @@ services:
     ports:
       - "50052:50052"
     depends_on:
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
@@ -89,10 +80,8 @@ services:
     ports:
       - "50053:50053"
     depends_on:
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
