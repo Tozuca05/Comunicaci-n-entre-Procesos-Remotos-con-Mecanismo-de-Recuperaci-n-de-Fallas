@@ -7,10 +7,12 @@ const protoLoader = require('@grpc/proto-loader');
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
+
 // RabbitMQ
 let channel;
 async function connectRabbitMQ() {
   try {
+    // Usar el nombre del servicio definido en docker-compose
     const connection = await amqp.connect('amqp://rabbitmq');
     channel = await connection.createChannel();
     await channel.assertQueue('usuarios');
@@ -29,10 +31,11 @@ const packageDef = protoLoader.loadSync('./protos/user.proto');
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 const userPackage = grpcObject.user;
 
+// Usar los nombres de los servicios Docker en lugar de localhost
 const userClients = [
-  new userPackage.UserService('localhost:50051', grpc.credentials.createInsecure()),
-  new userPackage.UserService('localhost:50052', grpc.credentials.createInsecure()),
-  new userPackage.UserService('localhost:50053', grpc.credentials.createInsecure())
+  new userPackage.UserService('user-service-a:50051', grpc.credentials.createInsecure()),
+  new userPackage.UserService('user-service-b:50052', grpc.credentials.createInsecure()),
+  new userPackage.UserService('user-service-c:50053', grpc.credentials.createInsecure())
 ];
 
 // Función reutilizable de failover gRPC
@@ -41,11 +44,15 @@ function withFailover(methodName, payload, callback, index = 0) {
     return callback(new Error('Todos los servicios fallaron'));
   }
 
+  // Añadir el nombre del servicio para un mejor debugging
+  const serviceNames = ['user-service-a:50051', 'user-service-b:50052', 'user-service-c:50053'];
+  
   userClients[index][methodName](payload, (err, res) => {
     if (err) {
-      console.warn(`❌ Servidor en puerto ${50051 + index} falló. Probando siguiente...`);
+      console.warn(`❌ Servidor ${serviceNames[index]} falló. Probando siguiente...`);
       withFailover(methodName, payload, callback, index + 1);
     } else {
+      console.log(`✅ Respuesta exitosa de ${serviceNames[index]}`);
       callback(null, res);
     }
   });
@@ -71,8 +78,8 @@ app.get('/usuarios', (req, res) => {
   });
 });
 
-
+// Asegurarse de escuchar en todas las interfaces
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🌐 API Gateway escuchando en http://:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🌐 API Gateway escuchando en http://0.0.0.0:${PORT}`);
 });
