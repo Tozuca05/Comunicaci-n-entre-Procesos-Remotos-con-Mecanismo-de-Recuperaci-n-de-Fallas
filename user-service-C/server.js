@@ -39,6 +39,7 @@ async function validateUser(call, callback) {
 const server = new grpc.Server();
 server.addService(userPackage.UserService.service, {
   ValidateUser: validateUser,
+  GetAllUsers: getAllUsers,
 });
 
 server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), () => {
