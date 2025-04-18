@@ -7,7 +7,7 @@ const amqp = require('amqplib');
 const PORT = '50051';
 
 // MongoDB
-mongoose.connect('mongodb://localhost:27017/usuarios', {
+mongoose.connect('mongodb://mongo:27017/usuarios', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
