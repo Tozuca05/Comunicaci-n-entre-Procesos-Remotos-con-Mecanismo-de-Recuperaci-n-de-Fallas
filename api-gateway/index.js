@@ -21,7 +21,7 @@ async function connectRabbitMQ() {
 connectRabbitMQ();
 
 // Cargar el .proto y definir clientes gRPC
-const packageDef = protoLoader.loadSync('../protos/user.proto');
+const packageDef = protoLoader.loadSync('./protos/user.proto');
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 const userPackage = grpcObject.user;
 
