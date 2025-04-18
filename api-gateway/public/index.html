@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestor de Usuarios</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2em; background-color: #f4f4f4; }
+    h1 { color: #333; }
+    form, table { background: white; padding: 1em; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, button { margin: 0.5em 0; padding: 0.5em; width: 100%; }
+    table { width: 100%; margin-top: 2em; border-collapse: collapse; }
+    th, td { padding: 0.8em; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Crear Usuario</h1>
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Nombre" required />
+    <input type="email" id="email" placeholder="Correo Electrónico" required />
+    <button type="submit">Crear Usuario</button>
+  </form>
+
+  <h2>Usuarios Registrados</h2>
+  <button onclick="cargarUsuarios()">Recargar Usuarios</button>
+  <table id="tablaUsuarios">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Correo</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const API_URL = "http://54.84.57.182:3000";
+
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const res = await fetch(`${API_URL}/usuario`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email })
+      });
+      const data = await res.json();
+      alert(data.message || "Error creando usuario");
+      document.getElementById("userForm").reset();
+    });
+
+    async function cargarUsuarios() {
+      const res = await fetch("http://54.84.57.182:27017/usuarios/usuarios"); // Necesita un endpoint si no tienes backend expuesto
+      const data = await res.json();
+      const tbody = document.querySelector("#tablaUsuarios tbody");
+      tbody.innerHTML = "";
+      data.forEach(user => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${user._id}</td><td>${user.name}</td><td>${user.email}</td>`;
+        tbody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

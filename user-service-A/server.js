@@ -75,4 +75,17 @@ async function consumeRabbitMQ() {
   }
 }
 
+async function getAllUsers(call, callback) {
+  try {
+    const users = await Usuario.find();
+    const serialized = users.map(user => ({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email
+    }));
+    callback(null, { usuarios: serialized });
+  } catch (err) {
+    callback({ code: grpc.status.INTERNAL, message: 'Error obteniendo usuarios' });
+  }
+}
 consumeRabbitMQ();

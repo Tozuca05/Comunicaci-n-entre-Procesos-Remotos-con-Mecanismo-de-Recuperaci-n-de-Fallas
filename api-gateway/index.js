@@ -2,6 +2,7 @@ const express = require('express');
 const amqp = require('amqplib');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+app.use(express.static('public'));
 
 const app = express();
 app.use(express.json());
@@ -63,16 +64,13 @@ app.post('/usuario', async (req, res) => {
   }
 });
 
-// ✅ Validar usuario → gRPC con failover
-app.post('/validar', (req, res) => {
-  withFailover('ValidateUser', req.body, (err, response) => {
-    if (err) {
-      console.error('❌ Error validando usuario:', err.message);
-      return res.status(500).json({ error: 'Error validando usuario' });
-    }
-    res.json(response);
+app.get('/usuarios', (req, res) => {
+  withFailover('GetAllUsers', {}, (err, response) => {
+    if (err) return res.status(500).json({ error: 'Error obteniendo usuarios' });
+    res.json(response.usuarios);
   });
 });
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
