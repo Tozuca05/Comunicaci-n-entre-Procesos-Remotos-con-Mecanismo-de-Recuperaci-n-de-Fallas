@@ -16,8 +16,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"     # puerto para servicios
-      - "15672:15672"   # panel web
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -52,10 +52,8 @@ services:
     ports:
       - "50051:50051"
     depends_on:
-      mongo:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
@@ -70,10 +68,8 @@ services:
     ports:
       - "50052:50052"
     depends_on:
-      mongo:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
@@ -88,10 +84,8 @@ services:
     ports:
       - "50053:50053"
     depends_on:
-      mongo:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - mongo
+      - rabbitmq
     restart: always
     networks:
       - app-network
