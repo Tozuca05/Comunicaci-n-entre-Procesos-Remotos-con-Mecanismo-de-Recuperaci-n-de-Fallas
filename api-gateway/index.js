@@ -2,11 +2,11 @@ const express = require('express');
 const amqp = require('amqplib');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-app.use(express.static('public'));
+
 
 const app = express();
 app.use(express.json());
-
+app.use(express.static('public'));
 // RabbitMQ
 let channel;
 async function connectRabbitMQ() {
