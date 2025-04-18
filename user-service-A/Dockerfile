@@ -14,4 +14,4 @@ RUN npm install
 EXPOSE 50051
 
 # Comando por defecto
-CMD ["node", "index.js"]
+CMD ["node", "server.js"]
