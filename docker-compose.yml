@@ -9,6 +9,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - app-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -24,6 +26,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   api-gateway:
     build:
@@ -48,8 +52,10 @@ services:
     ports:
       - "50051:50051"
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: always
     networks:
       - app-network
@@ -64,8 +70,10 @@ services:
     ports:
       - "50052:50052"
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: always
     networks:
       - app-network
@@ -80,8 +88,10 @@ services:
     ports:
       - "50053:50053"
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: always
     networks:
       - app-network
