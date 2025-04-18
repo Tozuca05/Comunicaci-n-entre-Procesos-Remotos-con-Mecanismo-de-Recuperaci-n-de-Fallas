@@ -35,8 +35,8 @@
   </table>
 
   <script>
-    const API_URL = "http://54.84.57.182:3000";
-
+    const API_URL = "http://13.218.196.35:3000";
+  
     document.getElementById("userForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value;
@@ -49,16 +49,17 @@
       const data = await res.json();
       alert(data.message || "Error creando usuario");
       document.getElementById("userForm").reset();
+      cargarUsuarios(); // Opcional: recargar automáticamente después de crear
     });
-
+  
     async function cargarUsuarios() {
-      const res = await fetch("http://54.84.57.182:27017/usuarios/usuarios"); // Necesita un endpoint si no tienes backend expuesto
+      const res = await fetch(`${API_URL}/usuarios`);
       const data = await res.json();
       const tbody = document.querySelector("#tablaUsuarios tbody");
       tbody.innerHTML = "";
       data.forEach(user => {
         const row = document.createElement("tr");
-        row.innerHTML = `<td>${user._id}</td><td>${user.name}</td><td>${user.email}</td>`;
+        row.innerHTML = `<td>${user.id}</td><td>${user.name}</td><td>${user.email}</td>`;
         tbody.appendChild(row);
       });
     }

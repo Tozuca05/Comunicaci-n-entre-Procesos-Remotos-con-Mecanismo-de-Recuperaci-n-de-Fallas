@@ -74,5 +74,5 @@ app.get('/usuarios', (req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`🌐 API Gateway escuchando en http://localhost:${PORT}`);
+  console.log(`🌐 API Gateway escuchando en http://:${PORT}`);
 });
