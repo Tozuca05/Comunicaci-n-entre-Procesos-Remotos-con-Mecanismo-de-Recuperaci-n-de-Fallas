@@ -48,7 +48,7 @@ server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), () 
 // Consumidor RabbitMQ
 async function consumeRabbitMQ() {
   try {
-    const conn = await amqp.connect('amqp://localhost');
+    const conn = await amqp.connect('amqp://rabbitmq');
     const channel = await conn.createChannel();
     await channel.assertQueue('usuarios');
 
