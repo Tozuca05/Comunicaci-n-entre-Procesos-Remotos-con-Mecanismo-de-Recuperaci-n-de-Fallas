@@ -21,7 +21,7 @@ db.once('open', () => {
 const Usuario = mongoose.model('Usuario', { name: String, email: String });
 
 // Cargar .proto y servicio
-const packageDef = protoLoader.loadSync('../protos/user.proto');
+const packageDef = protoLoader.loadSync('./protos/user.proto');
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 const userPackage = grpcObject.user;
 
