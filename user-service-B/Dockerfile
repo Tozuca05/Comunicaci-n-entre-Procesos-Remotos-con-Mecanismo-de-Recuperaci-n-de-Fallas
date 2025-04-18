@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copiar archivos
 COPY . .
-
+COPY ../protos/user.proto ./protos/user.proto
 # Instalar dependencias
 RUN npm install
 
