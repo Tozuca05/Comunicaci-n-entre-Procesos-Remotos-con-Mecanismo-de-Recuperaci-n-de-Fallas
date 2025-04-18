@@ -60,9 +60,9 @@ async function consumeRabbitMQ() {
 
       try {
         const usuario = new Usuario({ name: data.name, email: data.email });
-        await usuario.save();
-        console.log(`✅ Usuario ${data.name} guardado desde ${PORT}`);
-        channel.ack(msg);
+        const saved = await usuario.save();
+        console.log(`✅ Usuario ${saved.name} guardado desde ${PORT} con ID: ${saved._id}`);
+        channel.ack(msg)
       } catch (err) {
         console.error('❌ Error guardando usuario:', err.message);
       }
