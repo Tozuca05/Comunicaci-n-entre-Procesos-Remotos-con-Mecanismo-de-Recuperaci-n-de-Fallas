@@ -99,7 +99,7 @@ La arquitectura del sistema se basa en un enfoque de microservicios, con los sig
 │   ├── server.js
 │   └── ...
 ├── user-service-C/
-│   ├── iserver.js
+│   ├── server.js
 │   └── ...
 ├── docker-compose.yml
 └── README.md
