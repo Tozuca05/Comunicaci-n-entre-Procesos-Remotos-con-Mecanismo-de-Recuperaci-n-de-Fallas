@@ -14,11 +14,11 @@ Este proyecto tiene como objetivo diseñar e implementar una aplicación distrib
 - ✅ **Comunicación REST entre cliente y API Gateway**: El cliente interactúa con el sistema a través de peticiones REST al API Gateway.
 - ✅ **Comunicación gRPC entre microservicios**: Los microservicios se comunican entre sí utilizando gRPC, lo que permite una comunicación eficiente y estructurada.
 - ✅ **Implementación de un MOM para gestión de fallos**: Se incorporó un Middleware Orientado a Mensajes que permite almacenar y reenviar mensajes en caso de que un microservicio no esté disponible temporalmente.
-
+- ✅ **Persistencia de datos en base de datos**: Cada uno de los microservicios implementa correctamente una base de datos para la persistencia de la información.
+- 
 ### 1.2. Aspectos No Cumplidos de la Actividad Propuesta
 
-- ❌ **Persistencia de datos en base de datos**: Actualmente, los microservicios no implementan una base de datos para persistencia de información. Esta funcionalidad está planificada para futuras versiones.
-
+- ❌ No aplica, se alcanzaron todos los aspectos requeridos por la actividad propuesta.
 ---
 
 ## 2. Diseño de Alto Nivel y Arquitectura
@@ -93,13 +93,13 @@ La arquitectura del sistema se basa en un enfoque de microservicios, con los sig
 │   ├── index.js
 │   └── ...
 ├── user-service-A/
-│   ├── index.js
+│   ├── server.js
 │   └── ...
 ├── user-service-B/
-│   ├── index.js
+│   ├── server.js
 │   └── ...
 ├── user-service-C/
-│   ├── index.js
+│   ├── iserver.js
 │   └── ...
 ├── docker-compose.yml
 └── README.md
@@ -155,3 +155,6 @@ El mensaje será almacenado por el MOM y reenviado cuando el servicio esté disp
 * [Node.js](https://nodejs.org/)
 
 * [Microservices Patterns by Chris Richardson](https://microservices.io/)
+
+* Ayudas Auxiliares: **ChatGpt** y **Clause.ai**
+
