@@ -15,7 +15,7 @@ Este proyecto tiene como objetivo diseñar e implementar una aplicación distrib
 - ✅ **Comunicación gRPC entre microservicios**: Los microservicios se comunican entre sí utilizando gRPC, lo que permite una comunicación eficiente y estructurada.
 - ✅ **Implementación de un MOM para gestión de fallos**: Se incorporó un Middleware Orientado a Mensajes que permite almacenar y reenviar mensajes en caso de que un microservicio no esté disponible temporalmente.
 - ✅ **Persistencia de datos en base de datos**: Cada uno de los microservicios implementa correctamente una base de datos para la persistencia de la información.
-- 
+
 ### 1.2. Aspectos No Cumplidos de la Actividad Propuesta
 
 - ❌ No aplica, se alcanzaron todos los aspectos requeridos por la actividad propuesta.
